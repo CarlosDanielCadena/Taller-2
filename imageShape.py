@@ -52,6 +52,7 @@ class imageShape:
             pts = np.array([[start_f], [end_f], [start_f1], [end_f1], [start_f2], [end_f2]])   # Matriz de coordenadas
             self.shape = cv2.drawContours(self.image_black, [pts], 0, (246, 176, 0), -1)       # Dibujo del Triangulo
             cv2.imwrite("Triangle.png", self.shape)         # Almacenar imagen Triangle
+            self.x = 0
 
         # Cuadrado
         elif self.shape_x == 1:
@@ -68,6 +69,7 @@ class imageShape:
             M = cv2.getRotationMatrix2D(self.centro, 45, 1)     # Rotar el dibujo
             self.shape = cv2.warpAffine(self.shape, M, (self.width, self.height))
             cv2.imwrite("Square.png", self.shape)               # Almacenar imagen Square
+            self.x = 0
 
         # Rectangulo
         elif self.shape_x == 2:
@@ -83,14 +85,14 @@ class imageShape:
 
             self.shape = cv2.rectangle(self.image_black, (start_p), (end_p), (246, 176, 0), -1) # Dibujar un Rectangulo
             cv2.imwrite("Rectangle.png", self.shape)       # Almacenar imagen Rectangle
+            self.x = 0
 
         # Circulo
         else:
             radio = int(float(min(self.width, self.height)/4))  # Radio
             self.shape = cv2.circle(self.image_black, self.centro, radio, (246, 176, 0), -1)  # Dibujar un Circulo
             cv2.imwrite("Circle.png", self.shape)           # Almacenar imagen Rectangle
-
-        self.x = 0
+            self.x = 0
 
     def showShape(self):                                    # Metodo showShape
         if self.x == 0:                                     # Condicion para Visualizar imagen
@@ -103,22 +105,20 @@ class imageShape:
             cv2.destroyAllWindows()                         # Destruye las ventanas creadas
 
     def getShape(self):                                     # Metodo getShape
-        cv2.imshow("Imagen Final", self.shape)              # Mostrar imagen final
-        cv2.waitKey(0)                                      # Esperar
-        cv2.destroyAllWindows()                             # Destruye las ventanas creadas
         self.y = self.shape_x                               # Variable de tipo de figura
-
         if self.y == 0:                         # Condicion para nombre de la figura (Triangle)
-            print('Image = Triangle')           # Imprimir Traingle
+            str = 'Triangle'                    # Imprimir Traingle
         elif self.y == 1:                       # Condicion para nombre de la figura (Square)
-            print('Image = Square')             # Imprimir Square
+            str = 'Square'                      # Imprimir Square
         elif self.y == 2:                       # Condicion para nombre de la figura (Rectangle)
-            print('Image = Rectangle')          # Imprimir Rectangle
+            str = 'Rectangle'                   # Imprimir Rectangle
         else:                                   # Condicion para nombre de la figura (Circle)
-            print('Image = Circle')             # Imprimir Circle
+            str = 'Circle  '                    # Imprimir Circle
 
-    def whatShape(self, path):                  # Metodo whatShape
-        self.shape = cv2.imread(path, 1)        # Leer imagen
+        return self.shape, str
+
+    def whatShape(self, x):                  # Metodo whatShape
+        self.shape = x                       # Tomar imagen
         im_gray = cv2.cvtColor(self.shape, cv2.COLOR_BGR2GRAY)     # Convertir imagen de BGR a escala de grises
         ret, thresh = cv2.threshold(im_gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)  # Umbralizacion con OTSU
         contornos, jerarquía = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # Encontrar contornos
@@ -131,14 +131,20 @@ class imageShape:
 
             if len(approx) == 3:                                    # Condicion para clasificar Triangulo
                 print('La figura corresponde a un Triangulo')       # Imprimir "Triangulo"
+                tip_img = 'Triangle'                                # Retorna "Triangulo"
             elif len(approx) >= 5:                                  # Condicion para clasificar Circulo
                 print('La figura corresponde a un Circulo')         # Imprimir "Circulo"
+                tip_img = 'Circle'                                  # Retorna "Circulo"
             elif len(approx) == 4:                                  # Condicion para clasificar Cuadrado y Rectangulo
                 aspect_ratio = float(w)/h                           # Relacion de aspecto de la figura
                 if aspect_ratio == 1:                               # Condicion Cuadrado
                     print('La figura corresponde a un Cuadrado')    # Imprimir "Cuadrado"
+                    tip_img = 'Square'                              # Retorna "Cuadrado"
                 else:                                               # Condicion Rectangulo
                     print('La figura corresponde a un Rectangulo')  # Imprimir "Rectangulo"
+                    tip_img = 'Rectangle'                           # Retorna "Rectangulo"
             else:                                                   # Condicion para otro caso
                 print('La figura corresponde a un nada')            # Imprimir "Nada"
+                tip_img = 'Nada'                                    # Retorna "Nada"
 
+        return (tip_img)
