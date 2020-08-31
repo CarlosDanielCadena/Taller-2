@@ -17,6 +17,9 @@ if __name__ == "__main__":       # Main
     imagen = imageShape(widht, height)
     imagen.generateShape()
     imagen.showShape()
-    imagen.getShape()
-    image = input("Por favor ingrese el nombre de la imagen (Triangle, Square, Rectangle, Circle) con el png: ")  # Ingreso de la ruta de la imagen
-    imagen.whatShape(image)
+    x, y = imagen.getShape()
+    tp = imagen.whatShape(x)
+    if y == tp:
+        print('La clasificación realizada es correcta')
+    else:
+        print('La clasificación realizada es incorrecta')
